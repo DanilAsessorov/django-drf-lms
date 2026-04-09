@@ -2,18 +2,24 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from rest_framework.routers import DefaultRouter
-from lms.views import CourseViewSet
-from lms.views import LessonListCreateView, LessonRetrieveUpdateDestroyView
+from django.http import HttpResponse
 
-router = DefaultRouter()
-router.register(r'courses', CourseViewSet, basename='course')
+def home(request):
+    return HttpResponse("""
+        <h1>Django DRF LMS Project</h1>
+        <p>Добро пожаловать в API системы управления обучением!</p>
+        <h2>Доступные эндпоинты:</h2>
+        <ul>
+            <li><a href="/admin/">/admin/</a> - Админ-панель</li>
+            <li><a href="/api/courses/">/api/courses/</a> - Список курсов</li>
+            <li><a href="/api/lessons/">/api/lessons/</a> - Список уроков</li>
+        </ul>
+    """)
 
 urlpatterns = [
+    path('', home, name='home'),
     path('admin/', admin.site.urls),
-    path('api/', include(router.urls)),
-    path('api/lessons/', LessonListCreateView.as_view(), name='lesson-list'),
-    path('api/lessons/<int:pk>/', LessonRetrieveUpdateDestroyView.as_view(), name='lesson-detail'),
+    path('api/', include('lms.urls', namespace='lms')),
 ]
 
 if settings.DEBUG:
